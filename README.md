@@ -4,7 +4,7 @@ simulation de foule
 Ce code propose la simulation de carré sortant d'une piece en python.
 
 requis : librairie Pillow, Tkinter, et re
-
+NB :  le projet inclus le dossier de la librairie pathfinding, ne fonctionne pas avec celle installé via pip,(correction TODO)
 ```
 
 EMPTY = 0
