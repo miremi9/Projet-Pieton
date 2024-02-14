@@ -1,3 +1,4 @@
+import sys
 from math import sqrt,isclose                                                           #Importation de la fonction sqrt et isclose
 import tkinter as tk                                                                    #Importation de tkinter
 from random import randint,choice                                                       #Importation de la fonction randint et choice
@@ -62,7 +63,7 @@ class World:                                      #Definition de la classe monde
 
 class Win(tk.Frame):                                    #L'affichage sous Tkinter
 	size = 800,800
-	def __init__(self, master=None):
+	def __init__(self, path,master=None):
 		tk.Frame.__init__(self, master)
 		self.pack()
 		
@@ -73,7 +74,7 @@ class Win(tk.Frame):                                    #L'affichage sous Tkinte
 		self.cadre = tk.Canvas(self,width = 800,height= 800)
 		self.cadre.pack()
 		
-		self.world = World(self.cadre,"map.txt")
+		self.world = World(self.cadre,path)
 		time.sleep(1)
 		self.update()
 	
@@ -106,7 +107,6 @@ def parse(path_map,world):      #Va transformer le fichier texte
 		CHUNK_SIZE  = data["CHUNK_SIZE"]
 
 		ratio = max((CHUNK_SIZE*len(matrice[0]))/Win.size[0],(CHUNK_SIZE*len(matrice))/Win.size[1])       #Redimmensionne l'image par rapport à l'écran 
-		print(ratio)
 		
 		Person.size = PERSON_SIZE/ratio, PERSON_SIZE/ratio
 
@@ -117,7 +117,6 @@ def parse(path_map,world):      #Va transformer le fichier texte
 			Person.image = img
 		empty_cases  =set()
 		CHUNK_SIZE = CHUNK_SIZE/ratio                 #Dimensionement de la salle(mur,rectangles...)
-		print(CHUNK_SIZE)
 		for y,ligne in enumerate(matrice):
 			for x,elem in enumerate(ligne):
 				p1 = x*CHUNK_SIZE,y*CHUNK_SIZE
@@ -152,5 +151,15 @@ def parse(path_map,world):      #Va transformer le fichier texte
 
 		return (matrice,walls,goal,list_pos,exi,data["EMPTY"],data["GOAL"],data["WALL"],CHUNK_SIZE)
 
-Win().mainloop()
+if __name__ =="__main__":
+	if (args_count := len(sys.argv)-1) > 1:
+		print(f"One or less argument expected, got {args_count }")
+		raise SystemExit(2)
+	if args_count ==1:
+		try:
+			Win(sys.argv[1]).mainloop()
+		except FileNotFoundError:
+			print(f"Error : File {sys.argv[1]} not found")
+	else:
+		Win("map.txt").mainloop()
 
