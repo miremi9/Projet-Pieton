@@ -102,6 +102,6 @@ def create_map(path:str):
     check_data(data)
     data_parsed = parsing_map(data)
 
-print(parsing_map(parsing_texte("map.txt")))
+#print(parsing_map(parsing_texte("map.txt")))
 
 
