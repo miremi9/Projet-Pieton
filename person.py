@@ -44,8 +44,6 @@ class Person:                                                                   
 		
 		if not self.path:
 			return 
-			
-
 
 		if not self.aim :
 			for coo in reversed(self.path):

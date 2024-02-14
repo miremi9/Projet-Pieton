@@ -42,7 +42,7 @@ def parsing_texte(path:str)->dict:
     return output
 
 def check_data(data:dict):
-    needed = ["CHUNK_SIZE","PERSON_SIZE","EMPTY","WALL","GOAL","MAP"]
+    needed = ["CHUNK_SIZE","PERSON_SIZE","EMPTY","WALL","GOAL","MAP","SPEED"]
     for need in needed:
         if need not in data:
             raise ValueError(f"{need} is not in the map definition")
@@ -69,7 +69,7 @@ def parsing_map(data:dict)->dict:
     n_data["GOAL"] =data["GOAL"]
     n_data["CHUNK_SIZE"] =int(data["CHUNK_SIZE"])
     n_data["PERSON_SIZE"] = int(data["PERSON_SIZE"])
-
+    n_data["SPEED"] =float(data["SPEED"])
     n_data["MAP"] = list()
     liste = data["MAP"].split("[")[1].split("]")[0]
     for line in liste.split("\n"):

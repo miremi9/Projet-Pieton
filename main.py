@@ -13,13 +13,13 @@ from objects import *
 
 from generator import *
 
-SPEED =100
+SPEED =50
 
 
 class World:                                      #Definition de la classe monde, il va contenir tout(mur,personnes,rectangle,mouvements....)
 	chunk =50
 	def __init__(self,root,path_map):
-
+		
 		self.root = root
 		self.matrice,self.walls,self.goal,list_pos,li_exit,EMPTY,GOAL,WALL,World.chunk=parse(path_map,self)         #Recuperation de toutes les informations
 		self.mob = set()
@@ -66,30 +66,55 @@ class Win(tk.Frame):                                    #L'affichage sous Tkinte
 	def __init__(self, path,master=None):
 		tk.Frame.__init__(self, master)
 		self.pack()
-		
+		self.path_map = path
 		self.value = tk.DoubleVar()
 		
-		
-		
+
 		self.cadre = tk.Canvas(self,width = 800,height= 800)
 		self.cadre.pack()
 		
-		self.world = World(self.cadre,path)
+		
+
+		self.automatic_restart_var = tk.BooleanVar(value=True)
+		self.automatic_restart_checkbox = tk.Checkbutton(self, text="Relance automatique", variable=self.automatic_restart_var,command = self.checkbox_changed)
+		self.automatic_restart_checkbox.pack()
 		time.sleep(1)
-		self.update()
+		self.start_world()
 	
 	def update(self):
 		time =  self.world.move()
 		if not time:
 			self.after(SPEED ,self.update)
 		else:
+
+			self.end(time)
+
+	def start_world(self):
+		self.cadre.delete("all")
+		self.world = World(self.cadre,self.path_map)
+		self.is_running = True
+		self.update()
+
+	def end(self,time):
+		if self.automatic_restart_var.get() == False:
 			self.label = tk.Label(text=f"Il a fallut {time} secondes pour evacuer la piece")
-			self.label.pack()
-			
+			self.label.pack()	
 			self.label2 = tk.Label(text=f"Il y a {int(self.world.average()*100)}% de contact")
 			self.label2.pack()
 			self.scale = tk.Scale(self,orient='horizontal', from_=0, to=time+1, variable=self.value,resolution=1,length = 500,command =self.world.rollback)
 			self.scale.pack()	
+			self.is_running  = False
+		else:
+			self.start_world()
+	
+	def checkbox_changed(self):
+		if not self.is_running and self.automatic_restart_var.get():	#restrat after a pause
+			self.label.destroy()
+			self.label2.destroy()
+			self.scale.destroy()
+			self.start_world()	
+			
+
 
 def adapte_pos(case:tuple,size_case,pos):
 	return (case[0]*size_case+pos[0],case[1]*size_case+pos[1])
@@ -110,6 +135,7 @@ def parse(path_map,world):      #Va transformer le fichier texte
 		
 		Person.size = PERSON_SIZE/ratio, PERSON_SIZE/ratio
 
+		Person.speed  = float(data["SPEED"])
 		
 		
 		if "FILE" in data:
